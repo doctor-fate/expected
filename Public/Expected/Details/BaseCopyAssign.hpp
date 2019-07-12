@@ -38,7 +38,7 @@ namespace stdx::details
 		And<
 			VoidOrNothrowCopyConstructible<T>,
 			NothrowCopyConstructible<E>,
-			VoidOrNothrowCopyAssignable<T>,
+			VoidOrNothrowMoveAssignable<T>,
 			NothrowMoveAssignable<E>>()
 		)
 		{
@@ -48,7 +48,7 @@ namespace stdx::details
 				{
 					if constexpr (!IsVoid<T>())
 					{
-						Super::AssignValue(*Other);
+						Super::AssignValue(T(*Other));
 					}
 				}
 				else
@@ -138,7 +138,7 @@ namespace stdx::details
 			Or<
 				IsVoid<T>,
 				And<
-					CopyAssignable<T>,
+					MoveAssignable<T>,
 					CopyConstructible<T>,
 					Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>
 				>
