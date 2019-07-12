@@ -101,16 +101,19 @@ namespace stdx::details
 			::new(static_cast<void*>(std::addressof(Super::Data.Value))) T(std::forward<Ts>(Args)...);
 		}
 
+		// can be constexpr in GCC 8.3
 		template <typename U>
-		void AssignValue(U&& Value) noexcept(NothrowAssignable<T&, U>())
+		constexpr void AssignValue(U&& Value) noexcept(NothrowAssignable<T&, U>())
 		{
 			Super::Data.Value = std::forward<U>(Value);
 		}
 
-
-		void DestroyValue() noexcept
+		constexpr void DestroyValue() noexcept
 		{
-			Super::Data.Value.~T();
+			if constexpr (!TriviallyDestructible<T>())
+			{
+				Super::Data.Value.~T();
+			}
 		}
 	};
 

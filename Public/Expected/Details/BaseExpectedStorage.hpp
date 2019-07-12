@@ -69,14 +69,18 @@ namespace stdx::details
 			::new (static_cast<void*>(std::addressof(Data.Unex))) Unexpected<E>(std::forward<Ts>(Args)...);
 		}
 
-		void AssignUnexpected(Unexpected <E>&& e) noexcept(NothrowMoveAssignable<E>())
+		// can be constexpr in GCC 8.3
+		constexpr void AssignUnexpected(Unexpected <E>&& e) noexcept(NothrowMoveAssignable<E>())
 		{
 			Data.Unex = std::move(e);
 		}
 
-		void DestroyUnexpected() noexcept
+		constexpr void DestroyUnexpected() noexcept
 		{
-			Data.Unex.~Unexpected<E>();
+			if constexpr (!TriviallyDestructible<E>())
+			{
+				Data.Unex.~Unexpected<E>();
+			}
 		}
 
 		ExpectedUnion<T, E> Data;

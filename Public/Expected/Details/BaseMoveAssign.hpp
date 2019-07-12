@@ -16,9 +16,9 @@ namespace stdx::details
 
 		BaseMoveAssignment(BaseMoveAssignment&&) = default;
 
-		BaseMoveAssignment& operator=(const BaseMoveAssignment&) = delete;
+		BaseMoveAssignment& operator=(const BaseMoveAssignment&) = default;
 
-		BaseMoveAssignment& operator=(BaseMoveAssignment&&) = default;
+		BaseMoveAssignment& operator=(BaseMoveAssignment&&) = delete;
 	};
 
 	template <typename T, typename E>
