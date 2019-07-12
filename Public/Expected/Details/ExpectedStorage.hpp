@@ -98,7 +98,7 @@ namespace stdx::details
 		template <typename ...Ts>
 		void ConstructValue(Ts&& ...Args) noexcept(NothrowConstructible<T, Ts...>())
 		{
-			::new(static_cast<void*>(std::addressof(Super::Data.v))) T(std::forward<Ts>(Args)...);
+			::new(static_cast<void*>(std::addressof(Super::Data.Value))) T(std::forward<Ts>(Args)...);
 		}
 
 		template <typename U>

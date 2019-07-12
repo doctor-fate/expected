@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(expected)
 
+add_subdirectory(googletest)
+
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(expected INTERFACE)
@@ -31,3 +33,5 @@ target_include_directories(expected INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE
 add_executable(expected_example main.cpp)
 
 target_link_libraries(expected_example PRIVATE expected)
+
+add_subdirectory(test)

@@ -1,19 +1,8 @@
 #include <Expected/Expected.hpp>
 
+#include <memory>
 #include <string>
-#include <string_view>
-#include <vector>
 
-constexpr stdx::Expected<int, std::string_view> f(int x)
-{
-	if (x <= 0)
-	{
-		return stdx::Unexpected("x must be greater than zero");
-	}
-	return 42;
-}
-
-// TODO: add normal tests and examples
 int main()
 {
 	{
