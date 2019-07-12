@@ -40,7 +40,7 @@ namespace stdx::details
 				}
 				else
 				{
-					Super::AssignValue(ValueType(std::forward<Ts>(Args)...));
+					Super::AssignValue(T(std::forward<Ts>(Args)...));
 				}
 			}
 			else
