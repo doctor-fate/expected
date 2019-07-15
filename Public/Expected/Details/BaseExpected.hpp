@@ -13,14 +13,15 @@ namespace stdx::details
 		using Super::Super;
 
 		template <typename ...Ts>
-		T& Emplace(Ts&& ...Args) noexcept(noexcept(DoEmplace(std::forward<Ts>(Args)...)))
+		T& Emplace(Ts&& ...Args)
+		noexcept(noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(std::forward<Ts>(Args)...)))
 		{
 			return DoEmplace(std::forward<Ts>(Args)...);
 		}
 
 		template <typename U, typename ...Ts>
 		T& Emplace(std::initializer_list<U> List, Ts&& ...Args) 
-		noexcept(noexcept(DoEmplace(List, std::forward<Ts>(Args)...)))
+		noexcept(noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(List, std::forward<Ts>(Args)...)))
 		{
 			return DoEmplace(List, std::forward<Ts>(Args)...);
 		}

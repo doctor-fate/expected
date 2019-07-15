@@ -345,6 +345,14 @@ namespace stdx
 						Super::ConstructUnexpected(std::move(Other).Error());
 						Other.DestroyUnexpected();
 					}
+					else if constexpr (details::NothrowMoveConstructible<T>() && details::NothrowMoveConstructible<E>())
+					{
+						Unexpected<E> Tmp(std::move(Other).Error());
+						Other.DestroyUnexpected();
+						Other.ConstructValue(std::move(**this));
+						Super::DestroyValue();
+						Super::ConstructUnexpected(std::move(Tmp));
+					}
 					else if constexpr (details::NothrowMoveConstructible<E>())
 					{
 						Unexpected<E> Tmp(std::move(Other).Error());
