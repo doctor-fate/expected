@@ -326,7 +326,7 @@ namespace stdx::tests
 			{
 				S() = default;
 
-				S(int Value)
+				S(int)
 				{
 					throw std::exception{};
 				}
@@ -548,7 +548,7 @@ namespace stdx::tests
 			{
 			}
 
-			S(int Value)
+			S(int)
 			{
 				throw std::exception{};
 			}
