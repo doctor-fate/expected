@@ -567,4 +567,21 @@ namespace stdx::tests
 			ASSERT_THROW(Ex.Emplace(42), std::exception);
 		}
 	}
+
+	TEST(Expected, EqCompare)
+	{
+		std::vector<int> Vector{1, 2, 3, 4};
+		stdx::Unexpected Unex("hello");
+		stdx::Expected<std::vector<int>, std::string> Ex1(Vector), Ex2(Unex);
+
+		ASSERT_NE(Ex1, Ex2);
+		ASSERT_EQ(Ex1, Vector);
+		ASSERT_EQ(Vector, Ex1);
+		ASSERT_NE(Ex2, Vector);
+		ASSERT_NE(Vector, Ex2);
+		ASSERT_EQ(Ex2, Unex);
+		ASSERT_EQ(Unex, Ex2);
+		ASSERT_NE(Ex1, Unex);
+		ASSERT_NE(Unex, Ex1);
+	}
 }

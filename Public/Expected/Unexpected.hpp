@@ -22,7 +22,7 @@ namespace stdx
 			typename ...Ts,
 			typename std::enable_if_t<details::Constructible<E, Ts...>::value, int> = 0
 		>
-		constexpr explicit Unexpected(std::in_place_t, Ts&& ... Args)
+		constexpr explicit Unexpected(std::in_place_t, Ts&& ...Args)
 		noexcept(details::NothrowConstructible<E, Ts...>()) : Data(std::forward<Ts>(Args)...)
 		{
 		}
@@ -32,7 +32,7 @@ namespace stdx
 			typename ...Ts,
 			typename std::enable_if_t<details::Constructible<E, std::initializer_list<U>&, Ts...>::value, int> = 0
 		>
-		constexpr explicit Unexpected(std::in_place_t, std::initializer_list<U> List, Ts&& ... Args)
+		constexpr explicit Unexpected(std::in_place_t, std::initializer_list<U> List, Ts&& ...Args)
 		noexcept(details::NothrowConstructible<E, std::initializer_list<U>&, Ts...>()) :
 			Data(List, std::forward<Ts>(Args)...)
 		{
@@ -88,17 +88,17 @@ namespace stdx
 			return Data;
 		}
 
-		constexpr E&& Value()&& noexcept
-		{
-			return std::move(Data);
-		}
-
 		constexpr const E&& Value() const&& noexcept
 		{
 			return std::move(Data);
 		}
 
-		auto Swap(Unexpected& Other) noexcept(details::NothrowSwappable<E>())
+		constexpr E&& Value()&& noexcept
+		{
+			return std::move(Data);
+		}
+
+		void Swap(Unexpected& Other) noexcept(details::NothrowSwappable<E>())
 		{
 			using std::swap;
 			swap(Data, Other.Data);
