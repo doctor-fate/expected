@@ -5,7 +5,7 @@
 namespace stdx
 {
 	template <typename T, typename E>
-	class Expected : public details::BaseExpected<T, E>
+	class [[nodiscard]] Expected : public details::BaseExpected<T, E>
 	{
 		static_assert(details::ValidExpectedSpecialization<T, E>());
 
@@ -377,6 +377,10 @@ namespace stdx
 						Other.DestroyUnexpected();
 						Other.ConstructValue(std::move(Tmp));
 					}
+					else
+					{
+						static_assert(sizeof(T) + sizeof(E) == 0);
+					}
 					swap(Super::bHasValue, Other.bHasValue);
 				}
 				else
@@ -461,7 +465,8 @@ namespace stdx
 					details::And<details::MoveConstructible<T1>, details::Swappable<T1>>
 				>,
 				details::MoveConstructible<E1>,
-				details::Swappable<E1>
+				details::Swappable<E1>,
+				details::Or<details::VoidOrNothrowMoveConstructible<T1>, details::NothrowMoveConstructible<E1>>
 			>::value, int
 		> = 0
 	>

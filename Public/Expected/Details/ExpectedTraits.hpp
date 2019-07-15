@@ -8,7 +8,7 @@ namespace stdx::details
 	struct ConstructibleFromExpected :
 	Or<
 		Constructible<T, const Expected<U, G>&>,
-		Constructible < T, Expected<U, G>&>,
+		Constructible<T, Expected<U, G>&>,
 		Constructible<T, const Expected<U, G>>,
 		Constructible<T, Expected<U, G>>,
 		Convertible<const Expected<U, G>&, T>,

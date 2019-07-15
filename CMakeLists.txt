@@ -34,4 +34,4 @@ add_executable(expected_example main.cpp)
 
 target_link_libraries(expected_example PRIVATE expected)
 
-add_subdirectory(test)
+add_subdirectory(tests)

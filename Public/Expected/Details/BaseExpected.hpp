@@ -58,7 +58,7 @@ namespace stdx::details
 				}
 				else
 				{
-					Unexpected<E> Tmp(std::move(Super::error()));
+					Unexpected<E> Tmp(std::move(Super::Error()));
 					Super::DestroyUnexpected();
 					try
 					{
@@ -66,7 +66,7 @@ namespace stdx::details
 					}
 					catch (...)
 					{
-						Super::Constructunexpected(std::move(Tmp));
+						Super::ConstructUnexpected(std::move(Tmp));
 						throw;
 					}
 				}
