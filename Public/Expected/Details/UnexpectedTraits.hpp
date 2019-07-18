@@ -22,7 +22,7 @@ namespace stdx::details
 	And<
 		Constructible<E, G>,
 		Not<Same<RemoveCVRef<G>, std::in_place_t>>,
-		Not<Same<RemoveCVRef<G>, Unexpected<E>>>
+		Not<IsUnexpectedSpecialization<RemoveCVRef<G>>>
 	> {};
 
 	template <typename E, typename Err>

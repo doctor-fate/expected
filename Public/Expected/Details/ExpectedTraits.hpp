@@ -73,15 +73,19 @@ namespace stdx::details
 		static constexpr bool Nothrow  = NothrowConstructible<E, G&&>();
 	};
 
-	template <typename T, typename E, typename U>
+	template <typename T, typename E, typename U, typename K = RemoveCVRef<U>>
 	struct ConstructibleFromU
 	{
 		using Result = And<
-			Not<IsVoid<T>>,
 			Constructible<T, U>,
-			Not<Same<RemoveCVRef<U>, std::in_place_t>>,
-			Not<Same<RemoveCVRef<U>, Expected<T, E>>>,
-			Not<Same<RemoveCVRef<U>, Unexpected<E>>>
+			Not<
+				Or<
+					IsVoid<T>,
+					Same<K, std::in_place_t>,
+					IsExpectedSpecialization<K>,
+					IsUnexpectedSpecialization<K>
+				>
+			>
 		>;
 
 		static constexpr bool Implicit = Result() &&  Convertible<U, T>();
@@ -99,7 +103,7 @@ namespace stdx::details
 	template <typename T, typename E, typename U>
 	struct AssignableFromU :
 	And<
-		Not<Same<Expected<T, E>, RemoveCVRef<U>>>,
+		Not<IsExpectedSpecialization<RemoveCVRef<U>>>,
 		Not<And<IsScalar<T>, Same<T, Decay<U>>>>,
 		Constructible<T, U>,
 		Assignable<T&, U>,

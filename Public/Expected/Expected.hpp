@@ -5,7 +5,7 @@
 namespace stdx
 {
 	template <typename T, typename E>
-	class [[nodiscard]] Expected : public details::BaseExpected<T, E>
+	class [[nodiscard]] Expected final : public details::BaseExpected<T, E>
 	{
 		static_assert(details::ValidExpectedSpecialization<T, E>());
 
@@ -14,6 +14,9 @@ namespace stdx
 		static constexpr auto WithValue = std::in_place_index<0>;
 		static constexpr auto WithError = std::in_place_index<1>;
 	public:
+		template <typename U>
+		using Rebind = Expected<U, E>;
+
 		using Super::Emplace;
 
 		template <

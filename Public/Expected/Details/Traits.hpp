@@ -152,6 +152,16 @@ namespace stdx::details
 	{
 	};
 
+    template <typename T>
+    struct IsExpectedSpecialization : std::false_type
+    {
+    };
+
+    template <typename T, typename E>
+    struct IsExpectedSpecialization<Expected<T, E>> : std::true_type
+    {
+    };
+
 	template <typename E>
 	using ValidUnexpectedSpecialization =
 	And<
@@ -161,16 +171,20 @@ namespace stdx::details
 		Not<IsUnexpectedSpecialization<E>>
 	>;
 
-	template <typename T, typename E>
+	template <typename T, typename E, typename K = std::remove_cv_t<T>>
 	using ValidExpectedSpecialization =
 	And<
 		Or<IsVoid<T>, std::is_destructible<T>>,
 		std::is_destructible<E>,
 		ValidUnexpectedSpecialization<E>,
-		Not<std::is_reference<T>>,
-		Not<std::is_function<T>>,
-		Not<Same<std::in_place_t, std::remove_cv_t<T>>>,
-		Not<Same<unexpect_t, std::remove_cv_t<T>>>,
-		Not<Same<Unexpected<E>, std::remove_cv_t<T>>>
+		Not<
+			Or<
+				std::is_reference<T>,
+				std::is_function<T>,
+				Same<std::in_place_t, K>,
+				Same<unexpect_t, K>,
+				IsExpectedSpecialization<K>
+			>
+		>
 	>;
 }

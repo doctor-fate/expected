@@ -5,7 +5,7 @@
 namespace stdx
 {
 	template <typename E>
-	class Unexpected
+	class [[nodiscard]] Unexpected final
 	{
 		static_assert(details::ValidUnexpectedSpecialization<E>());
 	public:
