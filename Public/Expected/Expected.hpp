@@ -227,7 +227,8 @@ namespace stdx
 				>::value, int
 			> = 0
 		>
-		Expected& operator=(const Unexpected<G>& Unex) noexcept(details::NothrowMoveAssignable<E>())
+		Expected& operator=(const Unexpected<G>& Unex)
+		noexcept(details::NothrowConstructible<E, const G&>() && details::NothrowMoveAssignable<E>())
 		{
 			if (Super::HasValue())
 			{
@@ -254,7 +255,8 @@ namespace stdx
 				>::value, int
 			> = 0
 		>
-		Expected& operator=(Unexpected<G>&& Unex) noexcept(details::NothrowMoveAssignable<E>())
+		Expected& operator=(Unexpected<G>&& Unex)
+		noexcept(details::NothrowConstructible<E, G&&>() && details::NothrowMoveAssignable<E>())
 		{
 			if (Super::HasValue())
 			{

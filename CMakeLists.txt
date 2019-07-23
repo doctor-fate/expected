@@ -46,7 +46,7 @@ if (ENABLE_TESTS)
 
     add_subdirectory(googletest EXCLUDE_FROM_ALL)
 
-    add_executable(expected-test tests/expected.cpp)
+    add_executable(expected-test tests/expected.cpp tests/unexpected.cpp)
     target_link_libraries(expected-test PRIVATE expected gtest_main)
     add_test(NAME expected COMMAND expected-test)
 endif ()

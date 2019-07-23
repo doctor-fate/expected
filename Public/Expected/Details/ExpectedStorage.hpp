@@ -66,7 +66,7 @@ namespace stdx::details
 		{
 			if (!Super::HasValue())
 			{
-				throw BadExpectedAccess(Super::Error());
+				throw BadExpectedAccess(std::move(Super::Error()));
 			}
 			return std::move(**this);
 		}
@@ -75,7 +75,7 @@ namespace stdx::details
 		{
 			if (!Super::HasValue())
 			{
-				throw BadExpectedAccess(Super::Error());
+				throw BadExpectedAccess(std::move(Super::Error()));
 			}
 			return std::move(**this);
 		}
@@ -122,11 +122,35 @@ namespace stdx::details
 	{
 		using Super = BaseExpectedStorage<void, E>;
 	public:
-		constexpr void Value() const
+		constexpr void Value() const&
 		{
 			if (!Super::HasValue())
 			{
-				throw BadExpectedAccess<void>();
+				throw BadExpectedAccess(Super::Error());
+			}
+		}
+
+		constexpr void Value()&
+		{
+			if (!Super::HasValue())
+			{
+				throw BadExpectedAccess(Super::Error());
+			}
+		}
+
+		constexpr void Value() const&&
+		{
+			if (!Super::HasValue())
+			{
+				throw BadExpectedAccess(std::move(Super::Error()));
+			}
+		}
+
+		constexpr void Value()&&
+		{
+			if (!Super::HasValue())
+			{
+				throw BadExpectedAccess(std::move(Super::Error()));
 			}
 		}
 
