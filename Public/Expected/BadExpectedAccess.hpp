@@ -23,12 +23,12 @@ namespace stdx
 		{
 		}
 
-		const char* what() const noexcept override
+		[[nodiscard]] const char* what() const noexcept override
 		{
 			return "bad expected access";
 		}
 
-		const E& Error() const noexcept
+		[[nodiscard]] const E& Error() const noexcept
 		{
 			return Value;
 		}

@@ -14,32 +14,32 @@ namespace stdx::details
 		using ErrorType      = E;
 		using UnexpectedType = Unexpected<E>;
 
-		constexpr bool HasValue() const noexcept
+		[[nodiscard]] constexpr bool HasValue() const noexcept
 		{
 			return bHasValue;
 		}
 
-		constexpr explicit operator bool() const noexcept
+		[[nodiscard]] constexpr explicit operator bool() const noexcept
 		{
 			return HasValue();
 		}
 
-		constexpr const E& Error() const& noexcept
+		[[nodiscard]] constexpr const E& Error() const& noexcept
 		{
 			return Data.Unex.Value();
 		}
 
-		constexpr E& Error()& noexcept
+		[[nodiscard]] constexpr E& Error()& noexcept
 		{
 			return Data.Unex.Value();
 		}
 
-		constexpr const E&& Error() const&& noexcept
+		[[nodiscard]] constexpr const E&& Error() const&& noexcept
 		{
 			return std::move(Data.Unex).Value();
 		}
 
-		constexpr E&& Error()&& noexcept
+		[[nodiscard]] constexpr E&& Error()&& noexcept
 		{
 			return std::move(Data.Unex).Value();
 		}

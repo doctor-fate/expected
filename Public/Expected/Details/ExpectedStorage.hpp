@@ -14,32 +14,32 @@ namespace stdx::details
 	{
 		using Super = BaseExpectedStorage<T, E>;
 	public:
-		constexpr const T& operator*() const& noexcept
+		[[nodiscard]] constexpr const T& operator*() const& noexcept
 		{
 			return Super::Data.Value;
 		}
 
-		constexpr T& operator*()& noexcept
+		[[nodiscard]] constexpr T& operator*()& noexcept
 		{
 			return Super::Data.Value;
 		}
 
-		constexpr const T&& operator*() const&& noexcept
+		[[nodiscard]] constexpr const T&& operator*() const&& noexcept
 		{
 			return std::move(Super::Data.Value);
 		}
 
-		constexpr T&& operator*()&& noexcept
+		[[nodiscard]] constexpr T&& operator*()&& noexcept
 		{
 			return std::move(Super::Data.Value);
 		}
 
-		constexpr const T* operator->() const noexcept
+		[[nodiscard]] constexpr const T* operator->() const noexcept
 		{
 			return std::addressof(**this);
 		}
 
-		constexpr T* operator->() noexcept
+		[[nodiscard]] constexpr T* operator->() noexcept
 		{
 			return std::addressof(**this);
 		}
@@ -81,13 +81,13 @@ namespace stdx::details
 		}
 
 		template <typename U>
-		constexpr T ValueOr(U&& Default) const&
+		[[nodiscard]] constexpr T ValueOr(U&& Default) const&
 		{
 			return Super::HasValue() ? **this : static_cast<T>(std::forward<U>(Default));
 		}
 
 		template <typename U>
-		constexpr T ValueOr(U&& Default)&&
+		[[nodiscard]] constexpr T ValueOr(U&& Default)&&
 		{
 			return Super::HasValue() ? std::move(**this) : static_cast<T>(std::forward<U>(Default));
 		}

@@ -38,15 +38,15 @@ target_sources(expected
         ${PROJECT_SOURCE_DIR}/Public/Expected/Unexpected.hpp)
 target_include_directories(expected INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/Public>)
 
-add_executable(expected_example main.cpp)
-target_link_libraries(expected_example PRIVATE expected)
+add_executable(expected-example main.cpp)
+target_link_libraries(expected-example PRIVATE expected)
 
 if (ENABLE_TESTS)
     enable_testing()
 
     add_subdirectory(googletest EXCLUDE_FROM_ALL)
 
-    add_executable(expected-test tests/expected.cpp tests/unexpected.cpp)
+    add_executable(expected-test tests/Expected.cpp tests/Unexpected.cpp tests/Utility.hpp)
     target_link_libraries(expected-test PRIVATE expected gtest_main)
     add_test(NAME expected COMMAND expected-test)
 endif ()

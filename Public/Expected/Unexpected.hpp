@@ -78,22 +78,22 @@ namespace stdx
 		{
 		}
 
-		constexpr const E& Value() const& noexcept
+		[[nodiscard]] constexpr const E& Value() const& noexcept
 		{
 			return Data;
 		}
 
-		constexpr E& Value()& noexcept
+		[[nodiscard]] constexpr E& Value()& noexcept
 		{
 			return Data;
 		}
 
-		constexpr const E&& Value() const&& noexcept
+		[[nodiscard]] constexpr const E&& Value() const&& noexcept
 		{
 			return std::move(Data);
 		}
 
-		constexpr E&& Value()&& noexcept
+		[[nodiscard]] constexpr E&& Value()&& noexcept
 		{
 			return std::move(Data);
 		}

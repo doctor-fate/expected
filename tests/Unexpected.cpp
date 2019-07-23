@@ -1,11 +1,9 @@
-#include <Expected/Unexpected.hpp>
-
-#include <memory>
-#include <string>
 #include <string_view>
 #include <vector>
 
 #include <gtest/gtest.h>
+
+#include <Expected/Unexpected.hpp>
 
 namespace stdx::tests
 {
