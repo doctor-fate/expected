@@ -152,15 +152,15 @@ namespace stdx::details
 	{
 	};
 
-    template <typename T>
-    struct IsExpectedSpecialization : std::false_type
-    {
-    };
+	template <typename T>
+	struct IsExpectedSpecialization : std::false_type
+	{
+	};
 
-    template <typename T, typename E>
-    struct IsExpectedSpecialization<Expected<T, E>> : std::true_type
-    {
-    };
+	template <typename T, typename E>
+	struct IsExpectedSpecialization<Expected<T, E>> : std::true_type
+	{
+	};
 
 	template <typename E>
 	using ValidUnexpectedSpecialization =

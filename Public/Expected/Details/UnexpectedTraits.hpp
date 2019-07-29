@@ -17,12 +17,12 @@ namespace stdx::details
 		Convertible<const Unexpected<Err>&, E>
 	> {};
 
-	template <typename E, typename G>
+	template <typename E, typename G, typename K = RemoveCVRef<G>>
 	struct ConstructibleFromG :
 	And<
 		Constructible<E, G>,
-		Not<Same<RemoveCVRef<G>, std::in_place_t>>,
-		Not<IsUnexpectedSpecialization<RemoveCVRef<G>>>
+		Not<Same<K, std::in_place_t>>,
+		Not<IsUnexpectedSpecialization<K>>
 	> {};
 
 	template <typename E, typename Err>

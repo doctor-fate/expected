@@ -112,14 +112,14 @@ namespace stdx
 	Unexpected(E) -> Unexpected<E>;
 
 	template <typename E1, typename E2>
-	constexpr bool operator==(const Unexpected<E1>& X, const Unexpected<E2>& Y)
+	[[nodiscard]] constexpr bool operator==(const Unexpected<E1>& X, const Unexpected<E2>& Y)
 	noexcept(noexcept(X.Value() == Y.Value()))
 	{
 		return X.Value() == Y.Value();
 	}
 
 	template <typename E1, typename E2>
-	constexpr bool operator!=(const Unexpected<E1>& X, const Unexpected<E2>& Y)
+	[[nodiscard]] constexpr bool operator!=(const Unexpected<E1>& X, const Unexpected<E2>& Y)
 	noexcept(noexcept(X.Value() != Y.Value()))
 	{
 		return X.Value() != Y.Value();

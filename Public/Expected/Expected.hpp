@@ -405,7 +405,7 @@ namespace stdx
 	};
 
 	template <typename T1, typename E1, typename T2, typename E2>
-	constexpr bool operator==(const Expected<T1, E1>& X, const Expected<T2, E2>& Y)
+	[[nodiscard]] constexpr bool operator==(const Expected<T1, E1>& X, const Expected<T2, E2>& Y)
 	noexcept(noexcept((*X == *Y), (X.Error() == Y.Error())))
 	{
 		if (X.HasValue())
@@ -416,7 +416,7 @@ namespace stdx
 	}
 
 	template <typename T1, typename E1, typename T2, typename E2>
-	constexpr bool operator!=(const Expected<T1, E1>& X, const Expected<T2, E2>& Y)
+	[[nodiscard]] constexpr bool operator!=(const Expected<T1, E1>& X, const Expected<T2, E2>& Y)
 	noexcept(noexcept((*X != *Y), (X.Error() != Y.Error())))
 	{
 		if (X.HasValue())
@@ -427,51 +427,51 @@ namespace stdx
 	}
 
 	template <typename T1, typename E1, typename T2>
-	constexpr bool operator==(const Expected<T1, E1>& X, const T2& Value) noexcept(noexcept(*X == Value))
+	[[nodiscard]] constexpr bool operator==(const Expected<T1, E1>& X, const T2& Value) noexcept(noexcept(*X == Value))
 	{
 		return X.HasValue() && (*X == Value);
 	}
 
 	template <typename T1, typename E1, typename T2>
-	constexpr bool operator==(const T2& Value, const Expected<T1, E1>& X) noexcept(noexcept(X == Value))
+	[[nodiscard]] constexpr bool operator==(const T2& Value, const Expected<T1, E1>& X) noexcept(noexcept(X == Value))
 	{
 		return X == Value;
 	}
 
 	template <typename T1, typename E1, typename T2>
-	constexpr bool operator!=(const Expected<T1, E1>& X, const T2& Value) noexcept(noexcept(*X != Value))
+	[[nodiscard]] constexpr bool operator!=(const Expected<T1, E1>& X, const T2& Value) noexcept(noexcept(*X != Value))
 	{
 		return !X.HasValue() || (*X != Value);
 	}
 
 	template <typename T1, typename E1, typename T2>
-	constexpr bool operator!=(const T2& Value, const Expected<T1, E1>& X) noexcept(noexcept(X != Value))
+	[[nodiscard]] constexpr bool operator!=(const T2& Value, const Expected<T1, E1>& X) noexcept(noexcept(X != Value))
 	{
 		return X != Value;
 	}
 
 	template <typename T1, typename E1, typename E2>
-	constexpr bool operator==(const Expected<T1, E1>& X, const Unexpected<E2>& Unex)
+	[[nodiscard]] constexpr bool operator==(const Expected<T1, E1>& X, const Unexpected<E2>& Unex)
 	noexcept(noexcept(X.Error() == Unex.Value()))
 	{
 		return !X.HasValue() && (X.Error() == Unex.Value());
 	}
 
 	template <typename T1, typename E1, typename E2>
-	constexpr bool operator==(const Unexpected<E2>& Unex, const Expected<T1, E1>& X) noexcept(noexcept(X == Unex))
+	[[nodiscard]] constexpr bool operator==(const Unexpected<E2>& Unex, const Expected<T1, E1>& X) noexcept(noexcept(X == Unex))
 	{
 		return X == Unex;
 	}
 
 	template <typename T1, typename E1, typename E2>
-	constexpr bool operator!=(const Expected<T1, E1>& X, const Unexpected<E2>& Unex)
+	[[nodiscard]] constexpr bool operator!=(const Expected<T1, E1>& X, const Unexpected<E2>& Unex)
 	noexcept(noexcept(X.Error() != Unex.Value()))
 	{
 		return X.HasValue() || (X.Error() != Unex.Value());
 	}
 
 	template <typename T1, typename E1, typename E2>
-	constexpr bool operator!=(const Unexpected<E2>& Unex, const Expected<T1, E1>& X) noexcept(noexcept(X != Unex))
+	[[nodiscard]] constexpr bool operator!=(const Unexpected<E2>& Unex, const Expected<T1, E1>& X) noexcept(noexcept(X != Unex))
 	{
 		return X != Unex;
 	}

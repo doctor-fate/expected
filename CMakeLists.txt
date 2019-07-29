@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(INSTALL_GTEST OFF)
 set(BUILD_GMOCK OFF)
+set(gtest_force_shared_crt ON)
 
 option(ENABLE_TESTS "Generate test target" ON)
 
