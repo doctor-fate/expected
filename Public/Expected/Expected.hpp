@@ -406,7 +406,7 @@ namespace stdx
 
 	template <typename T1, typename E1, typename T2, typename E2>
 	[[nodiscard]] constexpr bool operator==(const Expected<T1, E1>& X, const Expected<T2, E2>& Y)
-	noexcept(noexcept((*X == *Y), (X.Error() == Y.Error())))
+	noexcept(noexcept(bool(*X == *Y) && bool(X.Error() == Y.Error())))
 	{
 		if (X.HasValue())
 		{
@@ -417,7 +417,7 @@ namespace stdx
 
 	template <typename T1, typename E1, typename T2, typename E2>
 	[[nodiscard]] constexpr bool operator!=(const Expected<T1, E1>& X, const Expected<T2, E2>& Y)
-	noexcept(noexcept((*X != *Y), (X.Error() != Y.Error())))
+	noexcept(noexcept(bool(*X != *Y) && bool(X.Error() != Y.Error())))
 	{
 		if (X.HasValue())
 		{
