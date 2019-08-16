@@ -5,35 +5,35 @@
 
 namespace stdx
 {
-	template <typename E>
-	class BadExpectedAccess;
+    template <typename E>
+    class BadExpectedAccess;
 
-	template <>
-	class BadExpectedAccess<void> : public std::exception
-	{
-	public:
-		explicit BadExpectedAccess() = default;
-	};
+    template <>
+    class BadExpectedAccess<void> : public std::exception
+    {
+    public:
+        explicit BadExpectedAccess() = default;
+    };
 
-	template <typename E>
-	class BadExpectedAccess : public BadExpectedAccess<void>
-	{
-	public:
-		explicit BadExpectedAccess(E Value) noexcept : Value(std::move(Value))
-		{
-		}
+    template <typename E>
+    class BadExpectedAccess : public BadExpectedAccess<void>
+    {
+    public:
+        explicit BadExpectedAccess(E Value) noexcept : Value(std::move(Value))
+        {
+        }
 
-		[[nodiscard]] const char* what() const noexcept override
-		{
-			return "bad expected access";
-		}
+        [[nodiscard]] const char* what() const noexcept override
+        {
+            return "bad expected access";
+        }
 
-		[[nodiscard]] const E& Error() const noexcept
-		{
-			return Value;
-		}
+        [[nodiscard]] const E& Error() const noexcept
+        {
+            return Value;
+        }
 
-	private:
-		E Value;
-	};
+    private:
+        E Value;
+    };
 }

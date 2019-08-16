@@ -2,10 +2,10 @@
 
 namespace stdx
 {
-	struct unexpect_t
-	{
-		explicit unexpect_t() = default;
-	};
+    struct unexpect_t
+    {
+        explicit unexpect_t() = default;
+    };
 
-	constexpr unexpect_t unexpect;
+    constexpr unexpect_t unexpect;
 }
