@@ -140,17 +140,14 @@ namespace stdx::details {
     template <typename Condition, typename T1, typename T2>
     using Conditional = std::conditional_t<bool(Condition::value), T1, T2>;
 
+    template <typename T>
+    using Cpp17Destructible = And<std::is_destructible<T>, std::is_object<T>, Not<std::is_array<T>>>;
+
     template <typename E>
     struct IsUnexpectedSpecialization : std::false_type {};
 
     template <typename E>
     struct IsUnexpectedSpecialization<Unexpected<E>> : std::true_type {};
-
-    template <typename T>
-    struct IsExpectedSpecialization : std::false_type {};
-
-    template <typename T, typename E>
-    struct IsExpectedSpecialization<Expected<T, E>> : std::true_type {};
 
     template <typename E>
     using ValidUnexpectedSpecialization =
@@ -158,13 +155,8 @@ namespace stdx::details {
 
     template <typename T, typename E, typename K = std::remove_cv_t<T>>
     using ValidExpectedSpecialization =
-        And<Or<IsVoid<T>, std::is_destructible<T>>,
-            std::is_destructible<E>,
-            ValidUnexpectedSpecialization<E>,
-            Not<
-                Or<std::is_reference<T>,
-                   std::is_function<T>,
-                   Same<std::in_place_t, K>,
-                   Same<unexpect_t, K>,
-                   IsExpectedSpecialization<K>>>>;
+        And<Or<IsVoid<T>,
+               And<Cpp17Destructible<T>, Not<Or<Same<std::in_place_t, K>, Same<unexpect_t, K>, IsUnexpectedSpecialization<K>>>>>,
+            Cpp17Destructible<E>,
+            ValidUnexpectedSpecialization<E>>;
 }

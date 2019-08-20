@@ -3,7 +3,7 @@
 #include "Traits.hpp"
 
 namespace stdx::details {
-    template <typename T, typename E, typename U, typename G>
+    template <typename T, typename U, typename G>
     struct ConstructibleFromExpected :
         Or<Constructible<T, const Expected<U, G>&>,
            Constructible<T, Expected<U, G>&>,
@@ -12,19 +12,11 @@ namespace stdx::details {
            Convertible<const Expected<U, G>&, T>,
            Convertible<Expected<U, G>&, T>,
            Convertible<const Expected<U, G>&&, T>,
-           Convertible<Expected<U, G>&&, T>,
-           Constructible<Unexpected<E>, const Expected<U, G>&>,
-           Constructible<Unexpected<E>, Expected<U, G>&>,
-           Constructible<Unexpected<E>, const Expected<U, G>&&>,
-           Constructible<Unexpected<E>, Expected<U, G>&&>,
-           Convertible<const Expected<U, G>&, Unexpected<E>>,
-           Convertible<Expected<U, G>&, Unexpected<E>>,
-           Convertible<const Expected<U, G>&&, Unexpected<E>>,
-           Convertible<Expected<U, G>&&, Unexpected<E>>> {};
+           Convertible<Expected<U, G>&&, T>> {};
 
     template <typename T, typename E, typename U, typename G, bool = IsVoid<T>() || IsVoid<U>()>
     struct CopyConstructibleFromExpected {
-        using Result = And<Not<ConstructibleFromExpected<T, E, U, G>>, Constructible<T, const U&>, Constructible<E, const G&>>;
+        using Result = And<Not<ConstructibleFromExpected<T, U, G>>, Constructible<T, const U&>, Constructible<E, const G&>>;
 
         static constexpr bool Implicit = Result() && (Convertible<const U&, T>() && Convertible<const G&, E>());
         static constexpr bool Explicit = Result() && !(Convertible<const U&, T>() && Convertible<const G&, E>());
@@ -42,7 +34,7 @@ namespace stdx::details {
 
     template <typename T, typename E, typename U, typename G, bool = IsVoid<T>() || IsVoid<U>()>
     struct MoveConstructibleFromExpected {
-        using Result = And<Not<ConstructibleFromExpected<T, E, U, G>>, Constructible<T, U&&>, Constructible<E, G&&>>;
+        using Result = And<Not<ConstructibleFromExpected<T, U, G>>, Constructible<T, U&&>, Constructible<E, G&&>>;
 
         static constexpr bool Implicit = Result() && (Convertible<U&&, T>() && Convertible<G&&, E>());
         static constexpr bool Explicit = Result() && !(Convertible<U&&, T>() && Convertible<G&&, E>());
@@ -60,9 +52,7 @@ namespace stdx::details {
 
     template <typename T, typename E, typename U, typename K = RemoveCVRef<U>>
     struct ConstructibleFromU {
-        using Result =
-            And<Constructible<T, U>,
-                Not<Or<IsVoid<T>, Same<K, std::in_place_t>, IsExpectedSpecialization<K>, IsUnexpectedSpecialization<K>>>>;
+        using Result = And<Constructible<T, U>, Not<Or<IsVoid<T>, Same<K, std::in_place_t>, IsUnexpectedSpecialization<K>>>>;
 
         static constexpr bool Implicit = Result() && Convertible<U, T>();
         static constexpr bool Explicit = Result() && !Convertible<U, T>();
@@ -72,9 +62,9 @@ namespace stdx::details {
     template <typename T, typename... Ts>
     struct ConstructibleInPlace : Or<And<IsVoid<T>, BoolConstant<sizeof...(Ts) == 0>>, Constructible<T, Ts...>> {};
 
-    template <typename T, typename E, typename U>
+    template <typename T, typename E, typename U, typename K = RemoveCVRef<U>>
     struct AssignableFromU :
-        And<Not<IsExpectedSpecialization<RemoveCVRef<U>>>,
+        And<Not<IsUnexpectedSpecialization<K>>,
             Not<And<IsScalar<T>, Same<T, Decay<U>>>>,
             Constructible<T, U>,
             Assignable<T&, U>,
