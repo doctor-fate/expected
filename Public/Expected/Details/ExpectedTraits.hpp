@@ -7,20 +7,20 @@ namespace stdx::details {
     struct ConstructibleFromExpected :
         Or<Constructible<T, const Expected<U, G>&>,
            Constructible<T, Expected<U, G>&>,
-           Constructible<T, const Expected<U, G>>,
-           Constructible<T, Expected<U, G>>,
+           Constructible<T, const Expected<U, G>&&>,
+           Constructible<T, Expected<U, G>&&>,
            Convertible<const Expected<U, G>&, T>,
            Convertible<Expected<U, G>&, T>,
-           Convertible<const Expected<U, G>, T>,
-           Convertible<Expected<U, G>, T>,
+           Convertible<const Expected<U, G>&&, T>,
+           Convertible<Expected<U, G>&&, T>,
            Constructible<Unexpected<E>, const Expected<U, G>&>,
            Constructible<Unexpected<E>, Expected<U, G>&>,
-           Constructible<Unexpected<E>, const Expected<U, G>>,
-           Constructible<Unexpected<E>, Expected<U, G>>,
+           Constructible<Unexpected<E>, const Expected<U, G>&&>,
+           Constructible<Unexpected<E>, Expected<U, G>&&>,
            Convertible<const Expected<U, G>&, Unexpected<E>>,
            Convertible<Expected<U, G>&, Unexpected<E>>,
-           Convertible<const Expected<U, G>, Unexpected<E>>,
-           Convertible<Expected<U, G>, Unexpected<E>>> {};
+           Convertible<const Expected<U, G>&&, Unexpected<E>>,
+           Convertible<Expected<U, G>&&, Unexpected<E>>> {};
 
     template <typename T, typename E, typename U, typename G, bool = IsVoid<T>() || IsVoid<U>()>
     struct CopyConstructibleFromExpected {

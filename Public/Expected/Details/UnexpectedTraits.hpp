@@ -7,12 +7,12 @@ namespace stdx::details {
     struct ConstructibleFromUnexpected :
         Or<Constructible<E, Unexpected<Err>&>,
            Constructible<E, const Unexpected<Err>&>,
-           Constructible<E, Unexpected<Err>>,
-           Constructible<E, const Unexpected<Err>>,
+           Constructible<E, Unexpected<Err>&&>,
+           Constructible<E, const Unexpected<Err>&&>,
            Convertible<Unexpected<Err>&, E>,
            Convertible<const Unexpected<Err>&, E>,
-           Convertible<Unexpected<Err>, E>,
-           Convertible<const Unexpected<Err>&, E>> {};
+           Convertible<Unexpected<Err>&&, E>,
+           Convertible<const Unexpected<Err>&&, E>> {};
 
     template <typename E, typename G, typename K = RemoveCVRef<G>>
     struct ConstructibleFromG : And<Constructible<E, G>, Not<Same<K, std::in_place_t>>, Not<IsUnexpectedSpecialization<K>>> {};
