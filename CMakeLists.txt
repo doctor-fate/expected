@@ -47,7 +47,16 @@ if (ENABLE_TESTS)
 
     add_subdirectory(googletest EXCLUDE_FROM_ALL)
 
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(PEDANTIC_COMPILE_FLAGS
+                -Werror -Wall -Wextra -Wpedantic -Wconversion -Wno-sign-conversion
+                -Wold-style-cast -Wcovered-switch-default -Wundefined-func-template
+                -Wnarrowing -Wundefined-reinterpret-cast -Wredundant-parens
+                -Wmissing-exception-spec -Wundef -Wpointer-arith -Wshadow-all -Wno-shadow-field-in-constructor)
+    endif ()
+
     add_executable(expected-test tests/Expected.cpp tests/Unexpected.cpp tests/Utility.hpp)
+    target_compile_options(expected-test PRIVATE ${PEDANTIC_COMPILE_FLAGS})
     target_link_libraries(expected-test PRIVATE expected gtest_main)
     add_test(NAME expected COMMAND expected-test)
 endif ()

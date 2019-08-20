@@ -2,11 +2,9 @@
 
 #include "BaseCopy.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E, bool Enable>
-    struct BaseMoveConstructor : CopySelector<T, E>
-    {
+    struct BaseMoveConstructor : CopySelector<T, E> {
         using Super = CopySelector<T, E>;
         using Super::Super;
 
@@ -22,8 +20,7 @@ namespace stdx::details
     };
 
     template <typename T, typename E>
-    struct BaseMoveConstructor<T, E, true> : CopySelector<T, E>
-    {
+    struct BaseMoveConstructor<T, E, true> : CopySelector<T, E> {
         using Super = CopySelector<T, E>;
         using Super::Super;
 
@@ -31,17 +28,13 @@ namespace stdx::details
 
         BaseMoveConstructor(const BaseMoveConstructor&) = default;
 
-        BaseMoveConstructor(BaseMoveConstructor&& Other) noexcept(VoidOrNothrowMoveConstructible<T>() && NothrowMoveConstructible<E>())
-        {
-            if (Other.HasValue())
-            {
-                if constexpr (!IsVoid<T>())
-                {
+        BaseMoveConstructor(BaseMoveConstructor&& Other) noexcept(
+            VoidOrNothrowMoveConstructible<T>() && NothrowMoveConstructible<E>()) {
+            if (Other.HasValue()) {
+                if constexpr (!IsVoid<T>()) {
                     Super::ConstructValue(std::move(*Other));
                 }
-            }
-            else
-            {
+            } else {
                 Super::ConstructUnexpected(std::move(Other).Error());
             }
             Super::bHasValue = Other.bHasValue;

@@ -7,89 +7,71 @@
 #include "BaseExpectedStorage.hpp"
 #include "ExpectedUnion.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E>
-    class ExpectedStorage : public BaseExpectedStorage<T, E>
-    {
+    class ExpectedStorage : public BaseExpectedStorage<T, E> {
         using Super = BaseExpectedStorage<T, E>;
 
     public:
-        [[nodiscard]] constexpr const T& operator*() const& noexcept
-        {
+        [[nodiscard]] constexpr const T& operator*() const& noexcept {
             return Super::Data.Value;
         }
 
-        [[nodiscard]] constexpr T& operator*() & noexcept
-        {
+        [[nodiscard]] constexpr T& operator*() & noexcept {
             return Super::Data.Value;
         }
 
-        [[nodiscard]] constexpr const T&& operator*() const&& noexcept
-        {
+        [[nodiscard]] constexpr const T&& operator*() const&& noexcept {
             return std::move(Super::Data.Value);
         }
 
-        [[nodiscard]] constexpr T&& operator*() && noexcept
-        {
+        [[nodiscard]] constexpr T&& operator*() && noexcept {
             return std::move(Super::Data.Value);
         }
 
-        [[nodiscard]] constexpr const T* operator->() const noexcept
-        {
+        [[nodiscard]] constexpr const T* operator->() const noexcept {
             return std::addressof(**this);
         }
 
-        [[nodiscard]] constexpr T* operator->() noexcept
-        {
+        [[nodiscard]] constexpr T* operator->() noexcept {
             return std::addressof(**this);
         }
 
-        constexpr const T& Value() const&
-        {
-            if (!Super::HasValue())
-            {
+        constexpr const T& Value() const& {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(Super::Error());
             }
             return **this;
         }
 
-        constexpr T& Value() &
-        {
-            if (!Super::HasValue())
-            {
+        constexpr T& Value() & {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(Super::Error());
             }
             return **this;
         }
 
-        constexpr const T&& Value() const&&
-        {
-            if (!Super::HasValue())
-            {
+        constexpr const T&& Value() const&& {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(std::move(Super::Error()));
             }
             return std::move(**this);
         }
 
-        constexpr T&& Value() &&
-        {
-            if (!Super::HasValue())
-            {
+        constexpr T&& Value() && {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(std::move(Super::Error()));
             }
             return std::move(**this);
         }
 
         template <typename U>
-        [[nodiscard]] constexpr T ValueOr(U&& Default) const&
-        {
+        [[nodiscard]] constexpr T ValueOr(U&& Default) const& {
             return Super::HasValue() ? **this : static_cast<T>(std::forward<U>(Default));
         }
 
         template <typename U>
-        [[nodiscard]] constexpr T ValueOr(U&& Default) &&
-        {
+        [[nodiscard]] constexpr T ValueOr(U&& Default) && {
             return Super::HasValue() ? std::move(**this) : static_cast<T>(std::forward<U>(Default));
         }
 
@@ -97,60 +79,47 @@ namespace stdx::details
         using Super::Super;
 
         template <typename... Ts>
-        void ConstructValue(Ts&&... Args) noexcept(NothrowConstructible<T, Ts...>())
-        {
+        void ConstructValue(Ts&&... Args) noexcept(NothrowConstructible<T, Ts...>()) {
             ::new (static_cast<void*>(std::addressof(Super::Data.Value))) T(std::forward<Ts>(Args)...);
         }
 
         template <typename U>
-        void AssignValue(U&& Value) noexcept(NothrowAssignable<T&, U>())
-        {
+        void AssignValue(U&& Value) noexcept(NothrowAssignable<T&, U>()) {
             Super::Data.Value = std::forward<U>(Value);
         }
 
-        constexpr void DestroyValue() noexcept
-        {
-            if constexpr (!TriviallyDestructible<T>())
-            {
+        constexpr void DestroyValue() noexcept {
+            if constexpr (!TriviallyDestructible<T>()) {
                 Super::Data.Value.~T();
             }
         }
     };
 
     template <typename E>
-    class ExpectedStorage<void, E> : public BaseExpectedStorage<void, E>
-    {
+    class ExpectedStorage<void, E> : public BaseExpectedStorage<void, E> {
         using Super = BaseExpectedStorage<void, E>;
 
     public:
-        constexpr void Value() const&
-        {
-            if (!Super::HasValue())
-            {
+        constexpr void Value() const& {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(Super::Error());
             }
         }
 
-        constexpr void Value() &
-        {
-            if (!Super::HasValue())
-            {
+        constexpr void Value() & {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(Super::Error());
             }
         }
 
-        constexpr void Value() const&&
-        {
-            if (!Super::HasValue())
-            {
+        constexpr void Value() const&& {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(std::move(Super::Error()));
             }
         }
 
-        constexpr void Value() &&
-        {
-            if (!Super::HasValue())
-            {
+        constexpr void Value() && {
+            if (!Super::HasValue()) {
                 throw BadExpectedAccess(std::move(Super::Error()));
             }
         }

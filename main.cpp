@@ -1,10 +1,10 @@
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include <Expected/Expected.hpp>
 
-int main()
-{
+int main() {
     {
         using T = stdx::Expected<int, double>;
         static_assert(std::is_nothrow_default_constructible_v<T>);
@@ -50,8 +50,7 @@ int main()
     }
 
     {
-        struct NonSuch
-        {
+        struct NonSuch {
             NonSuch(NonSuch&&) = delete;
 
             NonSuch& operator=(NonSuch&&) = delete;

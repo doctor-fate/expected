@@ -2,11 +2,9 @@
 
 #include "BaseCopyAssign.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E, bool Enable>
-    struct BaseMoveAssignment : CopyAssignSelector<T, E>
-    {
+    struct BaseMoveAssignment : CopyAssignSelector<T, E> {
         using Super = CopyAssignSelector<T, E>;
         using Super::Super;
 
@@ -22,8 +20,7 @@ namespace stdx::details
     };
 
     template <typename T, typename E>
-    struct BaseMoveAssignment<T, E, true> : CopyAssignSelector<T, E>
-    {
+    struct BaseMoveAssignment<T, E, true> : CopyAssignSelector<T, E> {
         using Super = CopyAssignSelector<T, E>;
         using Super::Super;
 
@@ -36,74 +33,50 @@ namespace stdx::details
         BaseMoveAssignment& operator=(const BaseMoveAssignment&) = default;
 
         BaseMoveAssignment& operator=(BaseMoveAssignment&& Other) noexcept(
-            And<VoidOrNothrowMoveConstructible<T>, NothrowMoveConstructible<E>, VoidOrNothrowMoveAssignable<T>, NothrowMoveAssignable<E>>())
-        {
-            if (Other.HasValue())
-            {
-                if (Super::HasValue())
-                {
-                    if constexpr (!IsVoid<T>())
-                    {
+            And<VoidOrNothrowMoveConstructible<T>,
+                NothrowMoveConstructible<E>,
+                VoidOrNothrowMoveAssignable<T>,
+                NothrowMoveAssignable<E>>()) {
+            if (Other.HasValue()) {
+                if (Super::HasValue()) {
+                    if constexpr (!IsVoid<T>()) {
                         Super::AssignValue(std::move(*Other));
                     }
-                }
-                else
-                {
-                    if constexpr (IsVoid<T>())
-                    {
+                } else {
+                    if constexpr (IsVoid<T>()) {
                         Super::DestroyUnexpected();
-                    }
-                    else if constexpr (NothrowMoveConstructible<T>())
-                    {
+                    } else if constexpr (NothrowMoveConstructible<T>()) {
                         Super::DestroyUnexpected();
                         Super::ConstructValue(std::move(*Other));
-                    }
-                    else
-                    {
+                    } else {
                         Unexpected<E> Tmp(std::move(Super::Error()));
                         Super::DestroyUnexpected();
-                        try
-                        {
+                        try {
                             Super::ConstructValue(std::move(*Other));
-                        }
-                        catch (...)
-                        {
+                        } catch (...) {
                             Super::ConstructUnexpected(std::move(Tmp));
                             throw;
                         }
                     }
                 }
-            }
-            else
-            {
-                if (Super::HasValue())
-                {
-                    if constexpr (IsVoid<T>())
-                    {
+            } else {
+                if (Super::HasValue()) {
+                    if constexpr (IsVoid<T>()) {
                         Super::ConstructUnexpected(std::move(Other).Error());
-                    }
-                    else if constexpr (NothrowMoveConstructible<E>())
-                    {
+                    } else if constexpr (NothrowMoveConstructible<E>()) {
                         Super::DestroyValue();
                         Super::ConstructUnexpected(std::move(Other).Error());
-                    }
-                    else
-                    {
+                    } else {
                         T Tmp(std::move(**this));
                         Super::DestroyValue();
-                        try
-                        {
+                        try {
                             Super::ConstructUnexpected(std::move(Other).Error());
-                        }
-                        catch (...)
-                        {
+                        } catch (...) {
                             Super::ConstructValue(std::move(Tmp));
                             throw;
                         }
                     }
-                }
-                else
-                {
+                } else {
                     Super::AssignUnexpected(Unexpected<E>(std::move(Other).Error()));
                 }
             }
@@ -116,8 +89,8 @@ namespace stdx::details
     using MoveAssignSelector = BaseMoveAssignment<
         T,
         E,
-        (
-            And<Or<IsVoid<T>, And<MoveAssignable<T>, MoveConstructible<T>, Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>>>,
-                MoveAssignable<E>,
-                MoveConstructible<E>>())>;
+        And<Or<IsVoid<T>,
+               And<MoveAssignable<T>, MoveConstructible<T>, Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>>>,
+            MoveAssignable<E>,
+            MoveConstructible<E>>::value>;
 }

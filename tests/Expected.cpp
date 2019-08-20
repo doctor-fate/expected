@@ -11,10 +11,8 @@
 using namespace std::string_literals;
 using namespace std::string_view_literals;
 
-namespace stdx::tests
-{
-    TEST(Expected, Constructor_Default)
-    {
+namespace stdx::tests {
+    TEST(Expected, Constructor_Default) {
         {
             Expected<void, double> Ex;
             ASSERT_TRUE(Ex.HasValue());
@@ -35,13 +33,10 @@ namespace stdx::tests
             ASSERT_TRUE(empty(*Ex));
         }
 
-        {
-            static_assert(!std::is_default_constructible_v<Expected<NonDefaultConstructible, double>>);
-        }
+        { static_assert(!std::is_default_constructible_v<Expected<NonDefaultConstructible, double>>); }
     }
 
-    TEST(Expected, Constructor_FromU)
-    {
+    TEST(Expected, Constructor_FromU) {
         {
             Expected<int, double> Ex1 = 42;
             ASSERT_EQ(*Ex1, 42);
@@ -55,13 +50,12 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_CopyFromExpected)
-    {
+    TEST(Expected, Constructor_CopyFromExpected) {
         {
-            Expected<int, double> Ex1 = 42, Ex2 = Unexpected(42.0);
-            Expected<long, float> Ex3 = Ex1, Ex4 = Ex2;
+            Expected<int, float> Ex1 = 42, Ex2 = Unexpected(42.0f);
+            Expected<long, double> Ex3 = Ex1, Ex4 = Ex2;
             ASSERT_EQ(*Ex3, 42);
-            ASSERT_EQ(Ex4.Error(), 42.0f);
+            ASSERT_EQ(Ex4.Error(), 42.0);
         }
 
         {
@@ -75,13 +69,12 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_MoveFromExpected)
-    {
+    TEST(Expected, Constructor_MoveFromExpected) {
         {
-            Expected<int, double> Ex1 = 42, Ex2 = Unexpected(42.0);
-            Expected<long, float> Ex3 = std::move(Ex1), Ex4 = std::move(Ex2);
+            Expected<int, float> Ex1 = 42, Ex2 = Unexpected(42.0f);
+            Expected<long, double> Ex3 = std::move(Ex1), Ex4 = std::move(Ex2);
             ASSERT_EQ(*Ex3, 42);
-            ASSERT_EQ(Ex4.Error(), 42.0f);
+            ASSERT_EQ(Ex4.Error(), 42.0);
         }
 
         {
@@ -97,8 +90,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_CopyFromUnexpected)
-    {
+    TEST(Expected, Constructor_CopyFromUnexpected) {
         {
             Unexpected Unex("unexpected");
             Expected<int, std::string> Ex = Unex;
@@ -114,8 +106,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_MoveFromUnexpected)
-    {
+    TEST(Expected, Constructor_MoveFromUnexpected) {
         {
             Expected<int, std::string> Ex = Unexpected("unexpected");
             ASSERT_EQ(Ex.Error(), "unexpected");
@@ -129,11 +120,13 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_InPlace)
-    {
+    TEST(Expected, Constructor_InPlace) {
         {
             Expected<std::pair<int, std::string>, std::string> Ex(
-                std::in_place, std::piecewise_construct, std::forward_as_tuple(42), std::forward_as_tuple(4, 'a'));
+                std::in_place,
+                std::piecewise_construct,
+                std::forward_as_tuple(42),
+                std::forward_as_tuple(4, 'a'));
             ASSERT_EQ(Ex->first, 42);
             ASSERT_EQ(Ex->second, "aaaa");
         }
@@ -144,11 +137,13 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_Unexpect)
-    {
+    TEST(Expected, Constructor_Unexpect) {
         {
             Expected<std::string, std::pair<int, std::string>> Ex(
-                unexpect, std::piecewise_construct, std::forward_as_tuple(42), std::forward_as_tuple(4, 'a'));
+                unexpect,
+                std::piecewise_construct,
+                std::forward_as_tuple(42),
+                std::forward_as_tuple(4, 'a'));
             ASSERT_EQ(Ex.Error().first, 42);
             ASSERT_EQ(Ex.Error().second, "aaaa");
         }
@@ -159,8 +154,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_Copy)
-    {
+    TEST(Expected, Constructor_Copy) {
         {
             Expected<std::vector<int>, std::string> Ex1(42);
             Expected<std::vector<int>, std::string> Ex2 = Ex1;
@@ -186,8 +180,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Constructor_Move)
-    {
+    TEST(Expected, Constructor_Move) {
         {
             Expected<void, std::unique_ptr<int>> Ex1(Unexpected(new int(42)));
             Expected<void, std::unique_ptr<int>> Ex2 = std::move(Ex1);
@@ -207,8 +200,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Assign_CopyUnexpected)
-    {
+    TEST(Expected, Assign_CopyUnexpected) {
         {
             Unexpected Unex("hello");
             Expected<std::vector<int>, std::string_view> Ex(42);
@@ -231,8 +223,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Assign_MoveUnexpected)
-    {
+    TEST(Expected, Assign_MoveUnexpected) {
         {
             Expected<std::vector<int>, std::string> Ex(42);
             Ex = Unexpected<std::string>("hello");
@@ -253,8 +244,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Assign_U)
-    {
+    TEST(Expected, Assign_U) {
         {
             std::vector<int> Vector{1, 2, 3, 4};
             Expected<std::vector<int>, std::string> Ex(42);
@@ -281,8 +271,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Assign_Copy)
-    {
+    TEST(Expected, Assign_Copy) {
         {
             std::vector<int> Vector{1, 2, 3, 4};
             Expected<std::vector<int>, std::string> Ex1(Vector);
@@ -369,8 +358,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Assign_Move)
-    {
+    TEST(Expected, Assign_Move) {
         {
             std::vector<int> Vector{1, 2, 3, 4};
             Expected<std::vector<int>, std::string> Ex1(Vector);
@@ -444,8 +432,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Swap)
-    {
+    TEST(Expected, Swap) {
         using std::swap;
 
         {
@@ -538,8 +525,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, Emplace)
-    {
+    TEST(Expected, Emplace) {
         {
             Expected<int, std::string> Ex;
             Ex.Emplace(42);
@@ -589,8 +575,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Expected, EqCompare)
-    {
+    TEST(Expected, EqCompare) {
         stdx::Expected<int, std::string> Ex1(42), Ex2(56), Ex3(unexpect, "hello"), Ex4(unexpect, "world");
 
         ASSERT_TRUE(Ex1 == Ex1);
@@ -628,8 +613,7 @@ namespace stdx::tests
         ASSERT_TRUE(Ex1 != Unexpected("hello"));
     }
 
-    TEST(Expected, Accessors)
-    {
+    TEST(Expected, Accessors) {
         {
             Expected<void, std::string> Ex;
 

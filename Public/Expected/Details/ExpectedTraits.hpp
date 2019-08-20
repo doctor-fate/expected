@@ -2,8 +2,7 @@
 
 #include "Traits.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E, typename U, typename G>
     struct ConstructibleFromExpected :
         Or<Constructible<T, const Expected<U, G>&>,
@@ -21,13 +20,10 @@ namespace stdx::details
            Convertible<const Expected<U, G>&, Unexpected<E>>,
            Convertible<Expected<U, G>&, Unexpected<E>>,
            Convertible<const Expected<U, G>, Unexpected<E>>,
-           Convertible<Expected<U, G>, Unexpected<E>>>
-    {
-    };
+           Convertible<Expected<U, G>, Unexpected<E>>> {};
 
     template <typename T, typename E, typename U, typename G, bool = IsVoid<T>() || IsVoid<U>()>
-    struct CopyConstructibleFromExpected
-    {
+    struct CopyConstructibleFromExpected {
         using Result = And<Not<ConstructibleFromExpected<T, E, U, G>>, Constructible<T, const U&>, Constructible<E, const G&>>;
 
         static constexpr bool Implicit = Result() && (Convertible<const U&, T>() && Convertible<const G&, E>());
@@ -36,8 +32,7 @@ namespace stdx::details
     };
 
     template <typename T, typename E, typename U, typename G>
-    struct CopyConstructibleFromExpected<T, E, U, G, true>
-    {
+    struct CopyConstructibleFromExpected<T, E, U, G, true> {
         using Result = And<IsVoid<T>, IsVoid<U>, Constructible<E, const G&>>;
 
         static constexpr bool Implicit = Result() && Convertible<const G&, E>();
@@ -46,8 +41,7 @@ namespace stdx::details
     };
 
     template <typename T, typename E, typename U, typename G, bool = IsVoid<T>() || IsVoid<U>()>
-    struct MoveConstructibleFromExpected
-    {
+    struct MoveConstructibleFromExpected {
         using Result = And<Not<ConstructibleFromExpected<T, E, U, G>>, Constructible<T, U&&>, Constructible<E, G&&>>;
 
         static constexpr bool Implicit = Result() && (Convertible<U&&, T>() && Convertible<G&&, E>());
@@ -56,8 +50,7 @@ namespace stdx::details
     };
 
     template <typename T, typename E, typename U, typename G>
-    struct MoveConstructibleFromExpected<T, E, U, G, true>
-    {
+    struct MoveConstructibleFromExpected<T, E, U, G, true> {
         using Result = And<IsVoid<T>, IsVoid<U>, Constructible<E, G&&>>;
 
         static constexpr bool Implicit = Result() && Convertible<G&&, E>();
@@ -66,10 +59,10 @@ namespace stdx::details
     };
 
     template <typename T, typename E, typename U, typename K = RemoveCVRef<U>>
-    struct ConstructibleFromU
-    {
+    struct ConstructibleFromU {
         using Result =
-            And<Constructible<T, U>, Not<Or<IsVoid<T>, Same<K, std::in_place_t>, IsExpectedSpecialization<K>, IsUnexpectedSpecialization<K>>>>;
+            And<Constructible<T, U>,
+                Not<Or<IsVoid<T>, Same<K, std::in_place_t>, IsExpectedSpecialization<K>, IsUnexpectedSpecialization<K>>>>;
 
         static constexpr bool Implicit = Result() && Convertible<U, T>();
         static constexpr bool Explicit = Result() && !Convertible<U, T>();
@@ -77,9 +70,7 @@ namespace stdx::details
     };
 
     template <typename T, typename... Ts>
-    struct ConstructibleInPlace : Or<And<IsVoid<T>, BoolConstant<sizeof...(Ts) == 0>>, Constructible<T, Ts...>>
-    {
-    };
+    struct ConstructibleInPlace : Or<And<IsVoid<T>, BoolConstant<sizeof...(Ts) == 0>>, Constructible<T, Ts...>> {};
 
     template <typename T, typename E, typename U>
     struct AssignableFromU :
@@ -87,14 +78,10 @@ namespace stdx::details
             Not<And<IsScalar<T>, Same<T, Decay<U>>>>,
             Constructible<T, U>,
             Assignable<T&, U>,
-            NothrowMoveConstructible<E>>
-    {
-    };
+            NothrowMoveConstructible<E>> {};
 
     template <typename T, typename E, typename... Ts>
     struct EmplacebleFromTs :
         Or<NothrowConstructible<T, Ts...>,
-           And<Constructible<T, Ts...>, MoveAssignable<T>, Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>>>
-    {
-    };
+           And<Constructible<T, Ts...>, MoveAssignable<T>, Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>>> {};
 }

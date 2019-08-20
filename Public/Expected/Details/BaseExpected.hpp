@@ -3,68 +3,49 @@
 #include "BaseMoveAssign.hpp"
 #include "ExpectedTraits.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E, bool = IsVoid<T>()>
-    class BaseExpected : public MoveAssignSelector<T, E>
-    {
+    class BaseExpected : public MoveAssignSelector<T, E> {
         using Super = MoveAssignSelector<T, E>;
 
     protected:
         using Super::Super;
 
         template <typename... Ts>
-        T& Emplace(Ts&&... Args) noexcept(noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(std::forward<Ts>(Args)...)))
-        {
+        T& Emplace(Ts&&... Args) noexcept(noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(std::forward<Ts>(Args)...))) {
             return DoEmplace(std::forward<Ts>(Args)...);
         }
 
         template <typename U, typename... Ts>
         T& Emplace(std::initializer_list<U> List, Ts&&... Args) noexcept(
-            noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(List, std::forward<Ts>(Args)...)))
-        {
+            noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(List, std::forward<Ts>(Args)...))) {
             return DoEmplace(List, std::forward<Ts>(Args)...);
         }
 
     private:
         template <typename... Ts, typename std::enable_if_t<EmplacebleFromTs<T, E, Ts...>::value, int> = 0>
-        T& DoEmplace(Ts&&... Args) noexcept(NothrowConstructible<T, Ts...>())
-        {
-            if (Super::HasValue())
-            {
-                if constexpr (NothrowConstructible<T, Ts...>())
-                {
+        T& DoEmplace(Ts&&... Args) noexcept(NothrowConstructible<T, Ts...>()) {
+            if (Super::HasValue()) {
+                if constexpr (NothrowConstructible<T, Ts...>()) {
                     Super::DestroyValue();
                     Super::ConstructValue(std::forward<Ts>(Args)...);
-                }
-                else
-                {
+                } else {
                     Super::AssignValue(T(std::forward<Ts>(Args)...));
                 }
-            }
-            else
-            {
-                if constexpr (NothrowConstructible<T, Ts...>())
-                {
+            } else {
+                if constexpr (NothrowConstructible<T, Ts...>()) {
                     Super::DestroyUnexpected();
                     Super::ConstructValue(std::forward<Ts>(Args)...);
-                }
-                else if constexpr (NothrowMoveConstructible<T>())
-                {
+                } else if constexpr (NothrowMoveConstructible<T>()) {
                     T Tmp(std::forward<Ts>(Args)...);
                     Super::DestroyUnexpected();
                     Super::ConstructValue(std::move(Tmp));
-                }
-                else
-                {
+                } else {
                     Unexpected<E> Tmp(std::move(Super::Error()));
                     Super::DestroyUnexpected();
-                    try
-                    {
+                    try {
                         Super::ConstructValue(std::forward<Ts>(Args)...);
-                    }
-                    catch (...)
-                    {
+                    } catch (...) {
                         Super::ConstructUnexpected(std::move(Tmp));
                         throw;
                     }
@@ -76,17 +57,14 @@ namespace stdx::details
     };
 
     template <typename T, typename E>
-    class BaseExpected<T, E, true> : public MoveAssignSelector<void, E>
-    {
+    class BaseExpected<T, E, true> : public MoveAssignSelector<void, E> {
         using Super = MoveAssignSelector<void, E>;
 
     protected:
         using Super::Super;
 
-        void Emplace() noexcept
-        {
-            if (!Super::HasValue())
-            {
+        void Emplace() noexcept {
+            if (!Super::HasValue()) {
                 Super::DestroyUnexpected();
             }
             Super::bHasValue = true;

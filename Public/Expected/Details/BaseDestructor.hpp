@@ -1,26 +1,18 @@
 #include "ExpectedStorage.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E>
-    struct BaseDestructor : ExpectedStorage<T, E>
-    {
+    struct BaseDestructor : ExpectedStorage<T, E> {
         using Super = ExpectedStorage<T, E>;
         using Super::Super;
 
-        ~BaseDestructor()
-        {
-            if (Super::HasValue())
-            {
-                if constexpr (!VoidOrTriviallyDestructible<T>())
-                {
+        ~BaseDestructor() {
+            if (Super::HasValue()) {
+                if constexpr (!VoidOrTriviallyDestructible<T>()) {
                     Super::DestroyValue();
                 }
-            }
-            else
-            {
-                if constexpr (!TriviallyDestructible<E>())
-                {
+            } else {
+                if constexpr (!TriviallyDestructible<E>()) {
                     Super::DestroyUnexpected();
                 }
             }

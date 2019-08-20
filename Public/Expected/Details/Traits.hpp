@@ -5,8 +5,7 @@
 
 #include <Expected/Tags.hpp>
 
-namespace stdx
-{
+namespace stdx {
     template <typename E>
     class Unexpected;
 
@@ -14,8 +13,7 @@ namespace stdx
     class Expected;
 }
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T>
     using RemoveCVRef = std::remove_const_t<std::remove_reference_t<T>>;
 
@@ -143,24 +141,16 @@ namespace stdx::details
     using Conditional = std::conditional_t<bool(Condition::value), T1, T2>;
 
     template <typename E>
-    struct IsUnexpectedSpecialization : std::false_type
-    {
-    };
+    struct IsUnexpectedSpecialization : std::false_type {};
 
     template <typename E>
-    struct IsUnexpectedSpecialization<Unexpected<E>> : std::true_type
-    {
-    };
+    struct IsUnexpectedSpecialization<Unexpected<E>> : std::true_type {};
 
     template <typename T>
-    struct IsExpectedSpecialization : std::false_type
-    {
-    };
+    struct IsExpectedSpecialization : std::false_type {};
 
     template <typename T, typename E>
-    struct IsExpectedSpecialization<Expected<T, E>> : std::true_type
-    {
-    };
+    struct IsExpectedSpecialization<Expected<T, E>> : std::true_type {};
 
     template <typename E>
     using ValidUnexpectedSpecialization =
@@ -171,5 +161,10 @@ namespace stdx::details
         And<Or<IsVoid<T>, std::is_destructible<T>>,
             std::is_destructible<E>,
             ValidUnexpectedSpecialization<E>,
-            Not<Or<std::is_reference<T>, std::is_function<T>, Same<std::in_place_t, K>, Same<unexpect_t, K>, IsExpectedSpecialization<K>>>>;
+            Not<
+                Or<std::is_reference<T>,
+                   std::is_function<T>,
+                   Same<std::in_place_t, K>,
+                   Same<unexpect_t, K>,
+                   IsExpectedSpecialization<K>>>>;
 }

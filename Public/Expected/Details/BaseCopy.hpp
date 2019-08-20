@@ -2,11 +2,9 @@
 
 #include "BaseDestructor.hpp"
 
-namespace stdx::details
-{
+namespace stdx::details {
     template <typename T, typename E, bool Enable>
-    struct BaseCopyConstructor : DestructorSelector<T, E>
-    {
+    struct BaseCopyConstructor : DestructorSelector<T, E> {
         using Super = DestructorSelector<T, E>;
         using Super::Super;
 
@@ -22,24 +20,19 @@ namespace stdx::details
     };
 
     template <typename T, typename E>
-    struct BaseCopyConstructor<T, E, true> : DestructorSelector<T, E>
-    {
+    struct BaseCopyConstructor<T, E, true> : DestructorSelector<T, E> {
         using Super = DestructorSelector<T, E>;
         using Super::Super;
 
         BaseCopyConstructor() = default;
 
-        constexpr BaseCopyConstructor(const BaseCopyConstructor& Other) noexcept(VoidOrNothrowCopyConstructible<T>() && NothrowCopyConstructible<E>())
-        {
-            if (Other.HasValue())
-            {
-                if constexpr (!IsVoid<T>())
-                {
+        constexpr BaseCopyConstructor(const BaseCopyConstructor& Other) noexcept(
+            VoidOrNothrowCopyConstructible<T>() && NothrowCopyConstructible<E>()) {
+            if (Other.HasValue()) {
+                if constexpr (!IsVoid<T>()) {
                     Super::ConstructValue(*Other);
                 }
-            }
-            else
-            {
+            } else {
                 Super::ConstructUnexpected(Other.Error());
             }
             Super::bHasValue = Other.bHasValue;

@@ -5,10 +5,8 @@
 
 #include <Expected/Unexpected.hpp>
 
-namespace stdx::tests
-{
-    TEST(Unexpected, Constructors)
-    {
+namespace stdx::tests {
+    TEST(Unexpected, Constructors) {
         {
             Unexpected<std::string> Unex("hello, world!!!");
             ASSERT_EQ(Unex.Value(), "hello, world!!!");
@@ -54,8 +52,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Unexpected, Accessors)
-    {
+    TEST(Unexpected, Accessors) {
         {
             Unexpected<std::string> Unex1("hello");
             ASSERT_EQ(Unex1.Value(), "hello");
@@ -66,8 +63,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Unexpected, Swap)
-    {
+    TEST(Unexpected, Swap) {
         using std::swap;
         {
             Unexpected<std::string> Unex1("hello"), Unex2("world");
@@ -77,8 +73,7 @@ namespace stdx::tests
         }
     }
 
-    TEST(Unexpected, EqCompare)
-    {
+    TEST(Unexpected, EqCompare) {
         {
             Unexpected<std::string> Unex1("hello"), Unex2("world");
             ASSERT_EQ(Unex1, Unex1);
