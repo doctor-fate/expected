@@ -1,7 +1,7 @@
 #include "ExpectedStorage.hpp"
 
 namespace stdx::details {
-    template <typename T, typename E>
+    template <typename T, typename E, bool Trivial = VoidOrTriviallyDestructible<T>() && TriviallyDestructible<E>()>
     struct BaseDestructor : ExpectedStorage<T, E> {
         using Super = ExpectedStorage<T, E>;
         using Super::Super;
@@ -20,6 +20,8 @@ namespace stdx::details {
     };
 
     template <typename T, typename E>
-    using DestructorSelector =
-        Conditional<And<VoidOrTriviallyDestructible<T>, TriviallyDestructible<E>>, ExpectedStorage<T, E>, BaseDestructor<T, E>>;
+    struct BaseDestructor<T, E, true> : ExpectedStorage<T, E> {
+        using Super = ExpectedStorage<T, E>;
+        using Super::Super;
+    };
 }

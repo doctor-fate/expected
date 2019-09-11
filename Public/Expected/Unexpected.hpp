@@ -9,17 +9,17 @@ namespace stdx {
 
     public:
         template <typename G = E, typename std::enable_if_t<details::ConstructibleFromG<E, G>::value, int> = 0>
-        constexpr explicit Unexpected(G&& Data) noexcept(details::NothrowConstructible<E, G>()) : Data(std::forward<G>(Data)) {}
+        constexpr explicit Unexpected(G && Data) noexcept(details::NothrowConstructible<E, G>()) : Data(std::forward<G>(Data)) {}
 
         template <typename... Ts, typename std::enable_if_t<details::Constructible<E, Ts...>::value, int> = 0>
-        constexpr explicit Unexpected(std::in_place_t, Ts&& ... Args) noexcept(details::NothrowConstructible<E, Ts...>()) :
+        constexpr explicit Unexpected(std::in_place_t, Ts && ... Args) noexcept(details::NothrowConstructible<E, Ts...>()) :
             Data(std::forward<Ts>(Args)...) {}
 
         template <
             typename U,
             typename... Ts,
             typename std::enable_if_t<details::Constructible<E, std::initializer_list<U>&, Ts...>::value, int> = 0>
-        constexpr explicit Unexpected(std::in_place_t, std::initializer_list<U> List, Ts&&... Args) noexcept(
+        constexpr explicit Unexpected(std::in_place_t, std::initializer_list<U> List, Ts && ... Args) noexcept(
             details::NothrowConstructible<E, std::initializer_list<U>&, Ts...>()) :
             Data(List, std::forward<Ts>(Args)...) {}
 
@@ -39,13 +39,13 @@ namespace stdx {
             typename Err,
             typename _Traits = details::MoveConstructibleFromUnexpected<E, Err>,
             typename std::enable_if_t<_Traits::Implicit, int> = 0>
-        constexpr Unexpected(Unexpected<Err>&& Other) noexcept(_Traits::Nothrow) : Data(std::move(Other).Value()) {}
+        constexpr Unexpected(Unexpected<Err> && Other) noexcept(_Traits::Nothrow) : Data(std::move(Other).Value()) {}
 
         template <
             typename Err,
             typename _Traits = details::MoveConstructibleFromUnexpected<E, Err>,
             typename std::enable_if_t<_Traits::Explicit, int> = 0>
-        constexpr explicit Unexpected(Unexpected<Err>&& Other) noexcept(_Traits::Nothrow) : Data(std::move(Other).Value()) {}
+        constexpr explicit Unexpected(Unexpected<Err> && Other) noexcept(_Traits::Nothrow) : Data(std::move(Other).Value()) {}
 
         [[nodiscard]] constexpr const E& Value() const& noexcept {
             return Data;
@@ -63,7 +63,7 @@ namespace stdx {
             return std::move(Data);
         }
 
-        void Swap(Unexpected& Other) noexcept(details::NothrowSwappable<E>()) {
+        void Swap(Unexpected & Other) noexcept(details::NothrowSwappable<E>()) {
             using std::swap;
             swap(Data, Other.Data);
         }

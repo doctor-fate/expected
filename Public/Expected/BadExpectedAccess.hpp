@@ -22,7 +22,7 @@ namespace stdx {
             return "bad expected access";
         }
 
-        [[nodiscard]] const E& Error() const & noexcept {
+        [[nodiscard]] const E& Error() const& noexcept {
             return Value;
         }
 

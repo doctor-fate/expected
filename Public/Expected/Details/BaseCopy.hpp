@@ -3,9 +3,22 @@
 #include "BaseDestructor.hpp"
 
 namespace stdx::details {
-    template <typename T, typename E, bool Enable>
-    struct BaseCopyConstructor : DestructorSelector<T, E> {
-        using Super = DestructorSelector<T, E>;
+    enum class EConstructorSelector { Disabled, Trivial, NonTrivial };
+
+    template <typename T, typename E>
+    constexpr EConstructorSelector SelectCopyConstructor() noexcept {
+        if constexpr (VoidOrTriviallyCopyConstructible<T>() && TriviallyCopyConstructible<E>()) {
+            return EConstructorSelector::Trivial;
+        } else if constexpr (VoidOrCopyConstructible<T>() && CopyConstructible<E>()) {
+            return EConstructorSelector::NonTrivial;
+        } else {
+            return EConstructorSelector::Disabled;
+        }
+    }
+
+    template <typename T, typename E, EConstructorSelector = SelectCopyConstructor<T, E>()>
+    struct BaseCopyConstructor : BaseDestructor<T, E> {
+        using Super = BaseDestructor<T, E>;
         using Super::Super;
 
         BaseCopyConstructor() = default;
@@ -20,8 +33,14 @@ namespace stdx::details {
     };
 
     template <typename T, typename E>
-    struct BaseCopyConstructor<T, E, true> : DestructorSelector<T, E> {
-        using Super = DestructorSelector<T, E>;
+    struct BaseCopyConstructor<T, E, EConstructorSelector::Trivial> : BaseDestructor<T, E> {
+        using Super = BaseDestructor<T, E>;
+        using Super::Super;
+    };
+
+    template <typename T, typename E>
+    struct BaseCopyConstructor<T, E, EConstructorSelector::NonTrivial> : BaseDestructor<T, E> {
+        using Super = BaseDestructor<T, E>;
         using Super::Super;
 
         BaseCopyConstructor() = default;
@@ -44,10 +63,4 @@ namespace stdx::details {
 
         BaseCopyConstructor& operator=(BaseCopyConstructor&&) = default;
     };
-
-    template <typename T, typename E>
-    using CopySelector = Conditional<
-        And<VoidOrTriviallyCopyConstructible<T>, TriviallyCopyConstructible<E>>,
-        DestructorSelector<T, E>,
-        BaseCopyConstructor<T, E, (And<VoidOrCopyConstructible<T>, CopyConstructible<E>>())>>;
 }

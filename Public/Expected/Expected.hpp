@@ -16,8 +16,6 @@ namespace stdx {
         template <typename U>
         using Rebind = Expected<U, E>;
 
-        using Super::Emplace;
-
         template <typename U = T, typename std::enable_if_t<details::VoidOrDefaultConstructible<U>::value, int> = 0>
         constexpr Expected() noexcept(details::VoidOrNothrowDefaultConstructible<U>()) : Super(WithValue) {}
 
@@ -58,7 +56,7 @@ namespace stdx {
             typename G,
             typename _Traits = details::MoveConstructibleFromExpected<T, E, U, G>,
             typename std::enable_if_t<_Traits::Implicit, int> = 0>
-        Expected(Expected<U, G>&& Other) noexcept(_Traits::Nothrow) {
+        Expected(Expected<U, G> && Other) noexcept(_Traits::Nothrow) {
             if (Other.HasValue()) {
                 if constexpr (!details::IsVoid<T>()) {
                     Super::ConstructValue(std::move(*Other));
@@ -74,7 +72,7 @@ namespace stdx {
             typename G,
             typename _Traits = details::MoveConstructibleFromExpected<T, E, U, G>,
             typename std::enable_if_t<_Traits::Explicit, int> = 0>
-        explicit Expected(Expected<U, G>&& Other) noexcept(_Traits::Nothrow) {
+        explicit Expected(Expected<U, G> && Other) noexcept(_Traits::Nothrow) {
             if (Other.HasValue()) {
                 if constexpr (!details::IsVoid<T>()) {
                     Super::ConstructValue(std::move(*Other));
@@ -89,13 +87,13 @@ namespace stdx {
             typename U,
             typename _Traits = details::ConstructibleFromU<T, E, U>,
             typename std::enable_if_t<_Traits::Implicit, int> = 0>
-        constexpr Expected(U&& Value) noexcept(_Traits::Nothrow) : Super(WithValue, std::forward<U>(Value)) {}
+        constexpr Expected(U && Value) noexcept(_Traits::Nothrow) : Super(WithValue, std::forward<U>(Value)) {}
 
         template <
             typename U,
             typename _Traits = details::ConstructibleFromU<T, E, U>,
             typename std::enable_if_t<_Traits::Explicit, int> = 0>
-        constexpr explicit Expected(U&& Value) noexcept(_Traits::Nothrow) : Super(WithValue, std::forward<U>(Value)) {}
+        constexpr explicit Expected(U && Value) noexcept(_Traits::Nothrow) : Super(WithValue, std::forward<U>(Value)) {}
 
         template <
             typename G = E,
@@ -112,36 +110,36 @@ namespace stdx {
         template <
             typename G = E,
             typename std::enable_if_t<details::Constructible<E, G&&>() && details::Convertible<G&&, E>(), int> = 0>
-        constexpr Expected(Unexpected<G>&& Unex) noexcept(details::NothrowConstructible<E, G&&>()) :
+        constexpr Expected(Unexpected<G> && Unex) noexcept(details::NothrowConstructible<E, G&&>()) :
             Super(WithError, std::move(Unex).Value()) {}
 
         template <
             typename G = E,
             typename std::enable_if_t<details::Constructible<E, G&&>() && !details::Convertible<G&&, E>(), int> = 0>
-        constexpr explicit Expected(Unexpected<G>&& Unex) noexcept(details::NothrowConstructible<E, G&&>()) :
+        constexpr explicit Expected(Unexpected<G> && Unex) noexcept(details::NothrowConstructible<E, G&&>()) :
             Super(WithError, std::move(Unex).Value()) {}
 
         template <typename... Ts, typename std::enable_if_t<details::ConstructibleInPlace<T, Ts...>::value, int> = 0>
-        constexpr explicit Expected(std::in_place_t, Ts&&... Args) noexcept(details::NothrowConstructible<T, Ts...>()) :
+        constexpr explicit Expected(std::in_place_t, Ts && ... Args) noexcept(details::NothrowConstructible<T, Ts...>()) :
             Super(WithValue, std::forward<Ts>(Args)...) {}
 
         template <
             typename U,
             typename... Ts,
             typename std::enable_if_t<details::ConstructibleInPlace<T, std::initializer_list<U>&, Ts...>::value, int> = 0>
-        constexpr explicit Expected(std::in_place_t, std::initializer_list<U> List, Ts&&... Args) noexcept(
+        constexpr explicit Expected(std::in_place_t, std::initializer_list<U> List, Ts && ... Args) noexcept(
             details::NothrowConstructible<T, std::initializer_list<U>&, Ts...>()) :
             Super(WithValue, List, std::forward<Ts>(Args)...) {}
 
         template <typename... Ts, typename std::enable_if_t<details::Constructible<E, Ts...>::value, int> = 0>
-        constexpr explicit Expected(unexpect_t, Ts&&... Args) noexcept(details::NothrowConstructible<E, Ts...>()) :
+        constexpr explicit Expected(unexpect_t, Ts && ... Args) noexcept(details::NothrowConstructible<E, Ts...>()) :
             Super(WithError, std::in_place, std::forward<Ts>(Args)...) {}
 
         template <
             typename U,
             typename... Ts,
             typename std::enable_if_t<details::Constructible<E, std::initializer_list<U>&, Ts...>::value, int> = 0>
-        constexpr explicit Expected(unexpect_t, std::initializer_list<U> List, Ts&&... Args) noexcept(
+        constexpr explicit Expected(unexpect_t, std::initializer_list<U> List, Ts && ... Args) noexcept(
             details::NothrowConstructible<E, std::initializer_list<U>&, Ts...>()) :
             Super(WithError, std::in_place, List, std::forward<Ts>(Args)...) {}
 
@@ -212,7 +210,7 @@ namespace stdx {
             return *this;
         }
 
-        void Swap(Expected<T, E>& Other) noexcept(details::And<
+        void Swap(Expected<T, E> & Other) noexcept(details::And<
                                                    details::VoidOrNothrowMoveConstructible<T>,
                                                    details::VoidOrNothrowSwappable<T>,
                                                    details::NothrowMoveConstructible<E>,

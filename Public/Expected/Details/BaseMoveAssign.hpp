@@ -3,9 +3,18 @@
 #include "BaseCopyAssign.hpp"
 
 namespace stdx::details {
-    template <typename T, typename E, bool Enable>
-    struct BaseMoveAssignment : CopyAssignSelector<T, E> {
-        using Super = CopyAssignSelector<T, E>;
+    template <typename T, typename E>
+    bool constexpr EnableMoveAssignment() noexcept {
+        return And<
+            Or<IsVoid<T>,
+               And<MoveAssignable<T>, MoveConstructible<T>, Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>>>,
+            MoveAssignable<E>,
+            MoveConstructible<E>>();
+    }
+
+    template <typename T, typename E, bool Enable = EnableMoveAssignment<T, E>()>
+    struct BaseMoveAssignment : BaseCopyAssignment<T, E> {
+        using Super = BaseCopyAssignment<T, E>;
         using Super::Super;
 
         BaseMoveAssignment() = default;
@@ -20,8 +29,8 @@ namespace stdx::details {
     };
 
     template <typename T, typename E>
-    struct BaseMoveAssignment<T, E, true> : CopyAssignSelector<T, E> {
-        using Super = CopyAssignSelector<T, E>;
+    struct BaseMoveAssignment<T, E, true> : BaseCopyAssignment<T, E> {
+        using Super = BaseCopyAssignment<T, E>;
         using Super::Super;
 
         BaseMoveAssignment() = default;
@@ -84,13 +93,4 @@ namespace stdx::details {
             return *this;
         }
     };
-
-    template <typename T, typename E>
-    using MoveAssignSelector = BaseMoveAssignment<
-        T,
-        E,
-        And<Or<IsVoid<T>,
-               And<MoveAssignable<T>, MoveConstructible<T>, Or<NothrowMoveConstructible<T>, NothrowMoveConstructible<E>>>>,
-            MoveAssignable<E>,
-            MoveConstructible<E>>::value>;
 }

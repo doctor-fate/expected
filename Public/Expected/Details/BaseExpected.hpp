@@ -4,12 +4,49 @@
 #include "ExpectedTraits.hpp"
 
 namespace stdx::details {
-    template <typename T, typename E, bool = IsVoid<T>()>
-    class BaseExpected : public MoveAssignSelector<T, E> {
-        using Super = MoveAssignSelector<T, E>;
 
-    protected:
-        using Super::Super;
+    template <typename T, typename E>
+    class BaseExpected : public BaseMoveAssignment<T, E> {
+        using Super = BaseMoveAssignment<T, E>;
+
+    public:
+        constexpr const T& Value() const& {
+            if (!Super::HasValue()) {
+                throw BadExpectedAccess(Super::Error());
+            }
+            return **this;
+        }
+
+        constexpr T& Value() & {
+            if (!Super::HasValue()) {
+                throw BadExpectedAccess(Super::Error());
+            }
+            return **this;
+        }
+
+        constexpr const T&& Value() const&& {
+            if (!Super::HasValue()) {
+                throw BadExpectedAccess(std::move(Super::Error()));
+            }
+            return std::move(**this);
+        }
+
+        constexpr T&& Value() && {
+            if (!Super::HasValue()) {
+                throw BadExpectedAccess(std::move(Super::Error()));
+            }
+            return std::move(**this);
+        }
+
+        template <typename U>
+        [[nodiscard]] constexpr T ValueOr(U&& Default) const& {
+            return Super::HasValue() ? **this : static_cast<T>(std::forward<U>(Default));
+        }
+
+        template <typename U>
+        [[nodiscard]] constexpr T ValueOr(U&& Default) && {
+            return Super::HasValue() ? std::move(**this) : static_cast<T>(std::forward<U>(Default));
+        }
 
         template <typename... Ts>
         T& Emplace(Ts&&... Args) noexcept(noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(std::forward<Ts>(Args)...))) {
@@ -21,6 +58,9 @@ namespace stdx::details {
             noexcept(std::declval<BaseExpected<T, E>>().DoEmplace(List, std::forward<Ts>(Args)...))) {
             return DoEmplace(List, std::forward<Ts>(Args)...);
         }
+
+    protected:
+        using Super::Super;
 
     private:
         template <typename... Ts, typename std::enable_if_t<EmplacebleFromTs<T, E, Ts...>::value, int> = 0>
@@ -56,18 +96,51 @@ namespace stdx::details {
         }
     };
 
-    template <typename T, typename E>
-    class BaseExpected<T, E, true> : public MoveAssignSelector<void, E> {
-        using Super = MoveAssignSelector<void, E>;
+#define _BASE_EXPECTED_VOID(Type)                                                                                                \
+    template <typename E>                                                                                                        \
+    class BaseExpected<Type, E> : public BaseMoveAssignment<void, E> {                                                           \
+        using Super = BaseMoveAssignment<void, E>;                                                                               \
+                                                                                                                                 \
+    public:                                                                                                                      \
+        constexpr void Value() const& {                                                                                          \
+            if (!Super::HasValue()) {                                                                                            \
+                throw BadExpectedAccess(Super::Error());                                                                         \
+            }                                                                                                                    \
+        }                                                                                                                        \
+                                                                                                                                 \
+        constexpr void Value() & {                                                                                               \
+            if (!Super::HasValue()) {                                                                                            \
+                throw BadExpectedAccess(Super::Error());                                                                         \
+            }                                                                                                                    \
+        }                                                                                                                        \
+                                                                                                                                 \
+        constexpr void Value() const&& {                                                                                         \
+            if (!Super::HasValue()) {                                                                                            \
+                throw BadExpectedAccess(std::move(Super::Error()));                                                              \
+            }                                                                                                                    \
+        }                                                                                                                        \
+                                                                                                                                 \
+        constexpr void Value() && {                                                                                              \
+            if (!Super::HasValue()) {                                                                                            \
+                throw BadExpectedAccess(std::move(Super::Error()));                                                              \
+            }                                                                                                                    \
+        }                                                                                                                        \
+                                                                                                                                 \
+        void Emplace() noexcept {                                                                                                \
+            if (!Super::HasValue()) {                                                                                            \
+                Super::DestroyUnexpected();                                                                                      \
+            }                                                                                                                    \
+            Super::bHasValue = true;                                                                                             \
+        }                                                                                                                        \
+                                                                                                                                 \
+    protected:                                                                                                                   \
+        using Super::Super;                                                                                                      \
+    }
 
-    protected:
-        using Super::Super;
+    _BASE_EXPECTED_VOID(void);
+    _BASE_EXPECTED_VOID(const void);
+    _BASE_EXPECTED_VOID(volatile void);
+    _BASE_EXPECTED_VOID(const volatile void);
 
-        void Emplace() noexcept {
-            if (!Super::HasValue()) {
-                Super::DestroyUnexpected();
-            }
-            Super::bHasValue = true;
-        }
-    };
+#undef _BASE_EXPECTED_VOID
 }
